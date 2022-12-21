@@ -1,0 +1,35 @@
+{
+    "name": "gen-table-mock",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "directories": {
+        "lib": "lib"
+    },
+    "scripts": {
+        "run": "node ./"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/flaxes/sql-mock-generator.git"
+    },
+    "keywords": [
+        "sql",
+        "mock",
+        "generator",
+        "nodejs",
+        "mysql"
+    ],
+    "author": "Jack",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/flaxes/sql-mock-generator/issues"
+    },
+    "homepage": "https://github.com/flaxes/sql-mock-generator#readme",
+    "dependencies": {
+        "@types/faker": "^5.5.3",
+        "@types/node": "^18.11.17",
+        "faker": "^5.5.3",
+        "mysql2": "^2.3.3"
+    }
+}
