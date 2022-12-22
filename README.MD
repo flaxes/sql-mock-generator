@@ -6,9 +6,10 @@ You don't need any clarification for your database - simply input your db's cred
 
 ## Fast start
 
+0. Copy-paste and rename `config_example.json` to `config.json`. And place your db's credentials
 1. Run `npm install` (in root of project)
 2. Run `node ./ 10` - to generate 10 rows for every table (in root of project)
-3. Import `result_<DATABASE>.sql` (in root of project) to your db.
+3. Import `result_<DATABASE>.sql` (in results folder) to your db.
 4. Done.
 
 ## Requirements
@@ -19,7 +20,7 @@ You don't need any clarification for your database - simply input your db's cred
 
 ## Installation
 
--   Install dependecies via `npm install` command in root of project
+-   Install dependencies via `npm install` command in root of project
 
 ## Configuration
 
@@ -41,12 +42,12 @@ Edit `mock-settings.json` and run again. Or simple provide number of rows for al
 ## Output
 
 Check root folder after running CLI  
-There are 2 files created. `result_<DATABASE>.json` with JSON presentation  
+There are 2 files created inside of *results* folder. `result_<DATABASE>.json` with JSON presentation  
 And `result_<DATABASE>.sql` with SQL presentation that you can use for your database
 
 ## Deep config
 
-You can edit `column-preset.js` for your desired values for any columns.  
+You can edit `column-preset.js` in custom folder and name it `column-preset-custom.js` for your desired values for any columns.  
 This project uses `faker.js` for generating mock data
 
 ## CONTRIBUTION

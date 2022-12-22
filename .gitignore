@@ -4,5 +4,5 @@ package-lock.json
 mock-settings.json
 config.json
 
-result.json
-result.sql
+results
+src/custom/*-custom.js

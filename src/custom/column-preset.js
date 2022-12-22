@@ -1,12 +1,10 @@
-// @ts-check
-
 /**
  * Check this documentation for more useful settings
- * 
+ *
  * @link [https://fakerjs.dev/api/](API)
  */
-const faker = require('faker');
-const { getRandomInt } = require('./lib/helpers');
+const faker = require("faker");
+const { getRandomInt } = require("../lib/helpers");
 
 const username = faker.internet.userName;
 
@@ -23,18 +21,24 @@ module.exports.familiarString = {
 
         return `example_with_timestamp_${currentTimestamp}`;
     },
+    /**
+     * For your project - `address` field perhaps *faker.address.streetAddress* value is more suitable
+     */
+    // address: faker.address.streetAddress,
+    address: faker.internet.ip,
     firstname: faker.name.firstName,
     lastname: faker.name.lastName,
     user: username,
     login: username,
     mail: faker.internet.email,
+    email: faker.internet.email,
     pass: faker.internet.password,
     name: faker.name.firstName,
     ips: faker.internet.ip,
     ip: faker.internet.ip,
     serverip: faker.internet.ip,
     secret: faker.internet.password,
-    modem: () => faker.internet.ip().split('.').slice(-2).join('_'),
+    modem: () => faker.internet.ip().split(".").slice(-2).join("_"),
     city: faker.address.city,
     country: faker.address.countryCode,
     geo: faker.address.countryCode,
@@ -44,16 +48,20 @@ module.exports.familiarString = {
     value: () => `random_val_${faker.random.word()}`,
     params: faker.datatype.json,
     deleted: () => faker.datatype.boolean(),
-    sql: () => `SELECT ${faker.database.column()} FROM table_${faker.database.column()}`
+    sql: () => `SELECT ${faker.database.column()} FROM table_${faker.database.column()}`,
 };
 
 module.exports.familiarNumber = {
+    timestamp: () => faker.date.past().getTime(),
     port: faker.internet.port,
     days: () => getRandomInt(7, 60),
     amount: () => Number((Math.random() * 200).toFixed(2)),
     price: () => Number((Math.random() * 200).toFixed(2)),
     httpPort: faker.internet.port,
     socksPort: faker.internet.port,
-    is: faker.datatype.boolean,
-    isdeleted: () => faker.datatype.boolean(),
+    is_: faker.datatype.boolean,
+    has_: faker.datatype.boolean,
+    percent: () => ~~(Math.random() * 101),
+    active: faker.datatype.boolean,
+    enabled: faker.datatype.boolean,
 };

@@ -1,7 +1,4 @@
-// @ts-check
-
 const fs = require("fs");
-const path = require("path");
 const { db } = require("../lib/db-connector");
 
 const CHECK_FOREIGN = "SET FOREIGN_KEY_CHECKS = ?;\n";
@@ -13,17 +10,16 @@ const sqlGenerate = (values, filePath) => {
         const result = [`# <${table}> mock data`];
 
         for (const row of rows) {
-            result.push(`INSERT INTO ${db.escapeId(table)} SET ${db.escape(row)};`);
+            result.push(`INSERT IGNORE INTO ${db.escapeId(table)} SET ${db.escape(row)};`);
         }
 
         results.push(result.join("\n"));
     }
 
-    results.push('\n', CHECK_FOREIGN.replace("?", "1"));
+    results.push("\n", CHECK_FOREIGN.replace("?", "1"));
 
-    const realPath = path.resolve(__dirname, filePath);
     const text = results.join("\n\n");
-    fs.writeFileSync(realPath, text);
+    fs.writeFileSync(filePath, text);
 
     return results;
 };

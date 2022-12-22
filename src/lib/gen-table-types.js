@@ -1,4 +1,3 @@
-// @ts-check
 
 const TAB_SIZE = 4;
 

@@ -1,9 +1,8 @@
-// @ts-check
 
 const fs = require('fs');
 const path = require('path');
 const structPromise = require('../promises/struct-promise');
-const FILENAME = '../mock-settings.json';
+const FILENAME = '../../mock-settings.json';
 const SIZE = process.argv[2];
 
 const genTableMockSettings = async () => {

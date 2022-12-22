@@ -1,9 +1,8 @@
-// @ts-check
 
 const mysql2 = require("mysql2");
 
 /** @type {import('mysql2').ConnectionOptions} */
-const config = require("../config.json").database;
+const config = require("../../config.json").database;
 
 const db = mysql2.createPool(config);
 

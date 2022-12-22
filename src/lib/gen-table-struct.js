@@ -1,4 +1,3 @@
-// @ts-check
 
 const { db, dbConfig, dbStream } = require("./db-connector");
 const { COLUMN_TYPES } = require("./gen-table-types");
@@ -13,6 +12,7 @@ const { COLUMN_TYPES } = require("./gen-table-types");
  * columnType: string;
  * maxLength?: number;
  * possibles?: string[]
+ * extra?: string;
  * }} InterfaceRowData
  */
 
@@ -47,7 +47,7 @@ const genTableStruct = async (dontStopDb) => {
                 COLUMN_TYPE,
                 COLUMN_DEFAULT,
                 CHARACTER_MAXIMUM_LENGTH,
-                // EXTRA,
+                EXTRA,
             } = row;
 
             const table = tables[TABLE_NAME] || (tables[TABLE_NAME] = []);
@@ -61,6 +61,7 @@ const genTableStruct = async (dontStopDb) => {
                 jsType: COLUMN_TYPES[DATA_TYPE] || "unknown",
                 columnType: COLUMN_TYPE,
                 maxLength: CHARACTER_MAXIMUM_LENGTH,
+                extra: EXTRA,
             };
 
             if (DATA_TYPE === "enum") {

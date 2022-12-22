@@ -1,4 +1,3 @@
-// @ts-check
 
 const { getRandomInt } = require('../lib/helpers');
 const mockSettingsPromise = require('../promises/mock-settings-promise');

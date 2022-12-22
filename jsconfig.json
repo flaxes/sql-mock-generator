@@ -1,0 +1,13 @@
+{
+    "compilerOptions": {
+        "module": "commonjs",
+        "target": "ES2022",
+        "lib": ["es2022"],
+        "resolveJsonModule": true,
+        "checkJs": true,
+        "strictNullChecks": true,
+        "outDir": "./build"
+    },
+    "include": ["src/**/*", "types", "test.js", "cli/**/*", "utils/**/*"],
+    "exclude": ["node_modules", "**/*.spec.ts", "build"]
+}
