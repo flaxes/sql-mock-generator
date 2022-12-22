@@ -1,12 +1,14 @@
-
-const { getRandomInt } = require('../lib/helpers');
-const mockSettingsPromise = require('../promises/mock-settings-promise');
-const structPromise = require('../promises/struct-promise');
-const uniqueStorage = require('../storages/unique-storage');
-const getValueForColumn = require('./get-value-for-column');
+const { getRandomInt } = require("../lib/helpers");
+const mockSettingsPromise = require("../promises/mock-settings-promise");
+const structPromise = require("../promises/struct-promise");
+const uniqueStorage = require("../storages/unique-storage");
+const getValueForColumn = require("./get-value-for-column");
 
 const getValuesForTable = async (tableName) => {
     const mockSettings = await mockSettingsPromise;
+    const maxId = mockSettings[tableName];
+    if (!maxId) return;
+
     const { tableUniqueIndexes, tables, tableForeigns } = await structPromise;
 
     const table = tables[tableName];
@@ -44,12 +46,12 @@ const getValuesForTable = async (tableName) => {
 
             if (previous.has(val)) {
                 // additional check for number
-                if (typeof val === 'number' && previous.has(++val)) {
+                if (typeof val === "number" && previous.has(++val)) {
                     continue;
                 }
 
                 // additional check for string
-                if (typeof val === 'string') {
+                if (typeof val === "string") {
                     val = `${getRandomInt(0, 9)}${val}`;
                     if (previous.has(val)) continue;
                 }
@@ -66,7 +68,7 @@ const getValuesForTable = async (tableName) => {
 
         for (const column of table) {
             const columnName = column.name;
-            if (columnName === 'id') {
+            if (columnName === "id") {
                 obj.id = id;
                 continue;
             }
@@ -74,22 +76,24 @@ const getValuesForTable = async (tableName) => {
             const isUnique = !!tableUniqueIndexes[column.name];
             const foreignRef = foreigns[column.name];
 
+            let val;
+
             if (isUnique) {
-                const val = tryUniqueValue(column, foreignRef);
-                if (val) {
-                    obj[columnName] = val;
-                } else continue;
+                val = tryUniqueValue(column, foreignRef);
             } else if (foreignRef) {
-                obj[columnName] = getForeignValue(columnName, foreignRef);
+                val = getForeignValue(columnName, foreignRef);
             } else {
-                obj[columnName] = getValueForColumn(tableName, column);
+                val = getValueForColumn(tableName, column);
+            }
+
+            if (val || val !== undefined) {
+                obj[columnName] = val;
             }
         }
 
         return obj;
     };
 
-    const maxId = mockSettings[tableName] || 1;
     for (let id = 1; id < maxId + 1; id++) {
         const val = getValueForTable(id);
         if (val) values.push(val);

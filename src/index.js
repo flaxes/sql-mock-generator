@@ -11,7 +11,9 @@ async function main() {
     const tablesValues = {};
 
     for (const table in tables) {
-        tablesValues[table] = await getValuesForTable(table);
+        const values = await getValuesForTable(table);
+
+        if (values && values.length) tablesValues[table] = values;
     }
 
     db.end();

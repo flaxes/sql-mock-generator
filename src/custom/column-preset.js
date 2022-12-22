@@ -7,6 +7,7 @@ const faker = require("faker");
 const { getRandomInt } = require("../lib/helpers");
 
 const username = faker.internet.userName;
+const zeroOne = () => ~~(Math.random() > 0.5)
 
 module.exports.familiarString = {
     example: () => {
@@ -47,11 +48,12 @@ module.exports.familiarString = {
     key: () => `${faker.hacker.ingverb()}_${faker.hacker.ingverb()}`,
     value: () => `random_val_${faker.random.word()}`,
     params: faker.datatype.json,
-    deleted: () => faker.datatype.boolean(),
+    deleted: zeroOne,
     sql: () => `SELECT ${faker.database.column()} FROM table_${faker.database.column()}`,
 };
 
 module.exports.familiarNumber = {
+    is_: zeroOne,
     timestamp: () => faker.date.past().getTime(),
     port: faker.internet.port,
     days: () => getRandomInt(7, 60),
@@ -59,9 +61,8 @@ module.exports.familiarNumber = {
     price: () => Number((Math.random() * 200).toFixed(2)),
     httpPort: faker.internet.port,
     socksPort: faker.internet.port,
-    is_: faker.datatype.boolean,
-    has_: faker.datatype.boolean,
+    has_: zeroOne,
     percent: () => ~~(Math.random() * 101),
-    active: faker.datatype.boolean,
-    enabled: faker.datatype.boolean,
+    active: zeroOne,
+    enabled: zeroOne,
 };

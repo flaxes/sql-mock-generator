@@ -29,6 +29,7 @@ const getValueForColumn = (_table, column) => {
         return null;
     }
 
+    // Useful for enum
     if (column.possibles) {
         return column.possibles[~~(Math.random() * column.possibles.length)];
     }
@@ -38,7 +39,9 @@ const getValueForColumn = (_table, column) => {
 
         for (const key in list) {
             if (name.startsWith(key)) {
+                console.log(key);
                 let res = list[key]();
+                console.log(res);
 
                 if (typeof res === "string" && column.maxLength) res = res.slice(0, column.maxLength);
 
@@ -51,19 +54,29 @@ const getValueForColumn = (_table, column) => {
         return new Date(16e11 - 1e11 + Math.random() * 17e10);
     };
 
-    switch (column.jsType) {
-        case "number":
-            return checkFamliliar(familiarNumber) || getRandomInt(0, column.maxLength || 50);
-        case "string":
-            return checkFamliliar(familiarString) || faker.random.word().slice();
-        case "string | Date":
-            return randomDate();
-        case "Date":
-            return randomDate();
+    const getResult = () => {
+        let val;
 
-        default:
-            return null;
-    }
+        switch (column.jsType) {
+            case "number":
+                val = checkFamliliar(familiarNumber);
+                return typeof val === "number" ? val : getRandomInt(0, column.maxLength || 50);
+            case "string":
+                val = checkFamliliar(familiarString);
+                return typeof val === "string" ? val : faker.random.word().slice();
+            case "string | Date":
+                return randomDate();
+            case "Date":
+                return randomDate();
+
+            default:
+                return null;
+        }
+    };
+
+    const result = getResult();
+
+    return result;
 };
 
 module.exports = getValueForColumn;
