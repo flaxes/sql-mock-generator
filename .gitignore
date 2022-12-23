@@ -6,3 +6,4 @@ config.json
 
 results
 src/custom/*-custom.js
+test.js
