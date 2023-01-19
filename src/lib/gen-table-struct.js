@@ -1,5 +1,6 @@
 const { db, dbConfig, dbStream } = require("./db-connector");
 const { COLUMN_TYPES, TAB } = require("./gen-table-types");
+const DISPLAY_NAME_POSITION = 2;
 
 /**
  * @typedef {{
@@ -18,6 +19,7 @@ const { COLUMN_TYPES, TAB } = require("./gen-table-types");
  * maxLength?: number;
  * possibles?: string[]
  * extra?: string;
+ * index: number;
  * }} InterfaceRowData
  */
 
@@ -35,6 +37,9 @@ const genTableStruct = async (dontStopDb) => {
 
     /** @type {Record<string, Record<string, { column: string; foreignColumn: string; foreignTable: string; key: string; }>>} */
     const tableForeigns = {};
+
+    /** @type {Record<string, string>} */
+    const tableDisplayNames = {};
 
     console.log("Collecting database tables...");
 
@@ -55,6 +60,7 @@ const genTableStruct = async (dontStopDb) => {
                 COLUMN_DEFAULT,
                 CHARACTER_MAXIMUM_LENGTH,
                 EXTRA,
+                ORDINAL_POSITION,
             } = row;
 
             const table = tables[TABLE_NAME] || (tables[TABLE_NAME] = []);
@@ -69,7 +75,12 @@ const genTableStruct = async (dontStopDb) => {
                 columnType: COLUMN_TYPE,
                 maxLength: CHARACTER_MAXIMUM_LENGTH,
                 extra: EXTRA,
+                index: ORDINAL_POSITION,
             };
+
+            if (ORDINAL_POSITION === DISPLAY_NAME_POSITION) {
+                tableDisplayNames[TABLE_NAME] = COLUMN_NAME;
+            }
 
             if (DATA_TYPE === "enum") {
                 val.possibles = COLUMN_TYPE.slice("enum(".length, -1)
@@ -166,7 +177,7 @@ const genTableStruct = async (dontStopDb) => {
         }
     }
 
-    return { tables, tableIndexes, tableUniqueIndexes, tableUniqueColumns, tableForeigns };
+    return { tables, tableIndexes, tableUniqueIndexes, tableUniqueColumns, tableForeigns, tableDisplayNames };
 };
 
 module.exports = genTableStruct;
