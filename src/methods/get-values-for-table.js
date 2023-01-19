@@ -9,7 +9,7 @@ const getValuesForTable = async (tableName) => {
     const maxId = mockSettings[tableName];
     if (!maxId) return;
 
-    const { tableUniqueIndexes, tables, tableForeigns } = await structPromise;
+    const { tableUniqueColumns, tables, tableForeigns } = await structPromise;
 
     const table = tables[tableName];
     const foreigns = tableForeigns[tableName] || {};
@@ -73,7 +73,7 @@ const getValuesForTable = async (tableName) => {
                 continue;
             }
 
-            const isUnique = !!tableUniqueIndexes[column.name];
+            const isUnique = !!tableUniqueColumns[column.name];
             const foreignRef = foreigns[column.name];
 
             let val;

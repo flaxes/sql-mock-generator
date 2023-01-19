@@ -39,9 +39,7 @@ const getValueForColumn = (_table, column) => {
 
         for (const key in list) {
             if (name.startsWith(key)) {
-                console.log(key);
                 let res = list[key]();
-                console.log(res);
 
                 if (typeof res === "string" && column.maxLength) res = res.slice(0, column.maxLength);
 

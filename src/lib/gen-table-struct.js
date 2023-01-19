@@ -1,11 +1,16 @@
-
 const { db, dbConfig, dbStream } = require("./db-connector");
-const { COLUMN_TYPES } = require("./gen-table-types");
+const { COLUMN_TYPES, TAB } = require("./gen-table-types");
 
 /**
  * @typedef {{
  * name: string;
  * nullable: boolean;
+ * uniqueGroups?: Record<string, string[]>;
+ * foreign?: {
+ *  table: string;
+ *  column: string;
+ *  key: string;
+ * };
  * type: string;
  * jsType: string;
  * defaultValue?: string;
@@ -25,6 +30,8 @@ const genTableStruct = async (dontStopDb) => {
     const tableIndexes = {};
     /** @type {Record<string, Record<string, string[]>>} */
     const tableUniqueIndexes = {};
+    /** @type {Record<string, Record<string, Record<string, string[]>>>} */
+    const tableUniqueColumns = {};
 
     /** @type {Record<string, Record<string, { column: string; foreignColumn: string; foreignTable: string; key: string; }>>} */
     const tableForeigns = {};
@@ -89,13 +96,19 @@ const genTableStruct = async (dontStopDb) => {
             if (!indexTable[INDEX_NAME]) indexTable[INDEX_NAME] = [];
 
             if (NON_UNIQUE === 0) {
-                const uniqueTable = tableUniqueIndexes[TABLE_NAME] || (tableUniqueIndexes[TABLE_NAME] = {});
+                const uniqueTableIndex = tableUniqueIndexes[TABLE_NAME] || (tableUniqueIndexes[TABLE_NAME] = {});
+                const uniqueTableColumn = tableUniqueColumns[TABLE_NAME] || (tableUniqueColumns[TABLE_NAME] = {});
 
-                if (!uniqueTable[INDEX_NAME]) uniqueTable[INDEX_NAME] = [];
-                if (!uniqueTable[COLUMN_NAME]) uniqueTable[COLUMN_NAME] = [];
+                if (!uniqueTableColumn[COLUMN_NAME]) uniqueTableColumn[COLUMN_NAME] = {};
+                if (!uniqueTableIndex[INDEX_NAME]) {
+                    uniqueTableIndex[INDEX_NAME] = [];
+                }
 
-                uniqueTable[INDEX_NAME].push(COLUMN_NAME);
-                uniqueTable[COLUMN_NAME].push(INDEX_NAME);
+                if (!uniqueTableColumn[COLUMN_NAME][INDEX_NAME]) {
+                    uniqueTableColumn[COLUMN_NAME][INDEX_NAME] = uniqueTableIndex[INDEX_NAME];
+                }
+
+                uniqueTableIndex[INDEX_NAME].push(COLUMN_NAME);
             }
 
             indexTable[INDEX_NAME].push(COLUMN_NAME);
@@ -116,6 +129,16 @@ const genTableStruct = async (dontStopDb) => {
             const { TABLE_NAME, COLUMN_NAME, CONSTRAINT_NAME, REFERENCED_TABLE_NAME, REFERENCED_COLUMN_NAME } = row;
 
             const table = tableForeigns[TABLE_NAME] || (tableForeigns[TABLE_NAME] = {});
+            const tableColumns = tables[TABLE_NAME];
+
+            const column = tableColumns.find((item) => item.name === COLUMN_NAME);
+            if (column) {
+                column.foreign = {
+                    key: COLUMN_NAME,
+                    column: REFERENCED_COLUMN_NAME,
+                    table: REFERENCED_TABLE_NAME,
+                };
+            }
 
             table[COLUMN_NAME] = {
                 column: COLUMN_NAME,
@@ -130,7 +153,20 @@ const genTableStruct = async (dontStopDb) => {
 
     console.log("Collecting structure finished.");
 
-    return { tables, tableIndexes, tableUniqueIndexes, tableForeigns };
+    for (const table in tableUniqueColumns) {
+        const tableColumns = tables[table];
+        const tableUnique = tableUniqueColumns[table];
+
+        for (const column in tableUnique) {
+            const columnUnique = tableUnique[column];
+            const columnTable = tableColumns.find((item) => item.name === column);
+            if (columnTable) {
+                columnTable.uniqueGroups = columnUnique;
+            }
+        }
+    }
+
+    return { tables, tableIndexes, tableUniqueIndexes, tableUniqueColumns, tableForeigns };
 };
 
 module.exports = genTableStruct;
