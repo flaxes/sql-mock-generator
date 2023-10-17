@@ -1,5 +1,5 @@
 const fs = require("fs");
-const { db } = require("../lib/db-connector");
+const { escapeId, escape } = require("mysql2");
 
 const CHECK_FOREIGN = "SET FOREIGN_KEY_CHECKS = ?;\n";
 
@@ -10,7 +10,8 @@ const sqlGenerate = (values, filePath) => {
         const result = [`# <${table}> mock data`];
 
         for (const row of rows) {
-            result.push(`INSERT IGNORE INTO ${db.escapeId(table)} SET ${db.escape(row)};`);
+            console.log(row);
+            result.push(`INSERT IGNORE INTO ${escapeId(table)} SET ${escape(row)};`);
         }
 
         results.push(result.join("\n"));

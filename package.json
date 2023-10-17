@@ -29,11 +29,11 @@
     "homepage": "https://github.com/flaxes/sql-mock-generator#readme",
     "dependencies": {
         "faker": "^5.5.3",
-        "mysql2": "^2.3.3"
+        "mysql2": "^3.6.2"
     },
     "devDependencies": {
-        "typescript": "^4.9.4",
         "@types/faker": "^5.5.3",
-        "@types/node": "^18.11.17"
+        "@types/node": "^18.11.17",
+        "typescript": "^4.9.4"
     }
 }
