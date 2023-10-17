@@ -1,6 +1,6 @@
 const faker = require("faker");
 const { familiarNumber, familiarString } = require("../promises/load-column-preset");
-const { chance_of_null_value, chance_of_default_value } = require("../lib/config");
+const { chance_of_null_value, chance_of_default_value, array_with_brackets } = require("../lib/config");
 const { getRandomInt, camelToSnakeCase } = require("../lib/helpers");
 
 const IGNORED_DEFAULT_VALUES = ["CURRENT_TIMESTAMP", "auto_increment"];
@@ -34,9 +34,32 @@ const getValueForColumn = (_table, column) => {
         return column.possibles[~~(Math.random() * column.possibles.length)];
     }
 
-    const checkFamliliar = (list) => {
-        const name = camelToSnakeCase(column.name);
+    const name = camelToSnakeCase(column.name);
+    const isArray = name.endsWith("_array");
 
+    const escapeArray = (array) => {
+        let val = JSON.stringify(array);
+
+        if (column.maxLength) {
+            val = val.slice(0, column.maxLength);
+
+            if (array_with_brackets) {
+                if (!val.endsWith('"]')) {
+                    val += val.endsWith('"') ? "]" : '"]';
+                }
+            } else {
+                // Remove first bracket
+                val = val.slice(1);
+
+                if (val.endsWith("]")) val = val.slice(0, -1);
+                if (!val.endsWith('"')) val += '"';
+            }
+        }
+
+        return val;
+    };
+
+    const checkFamliliar = (list) => {
         const genName = (key) => {
             let res = list[key]();
 
@@ -46,29 +69,19 @@ const getValueForColumn = (_table, column) => {
         };
 
         const genMany = (key) => {
-            const L = ~~(Math.random() * 6);
+            const L = ~~(Math.random() * 6) + 1;
             const array = [];
 
             for (let i = 0; i < L; i++) {
                 array.push(genName(key));
             }
 
-            let val = JSON.stringify(array);
-
-            if (column.maxLength) {
-                val = val.slice(0, column.maxLength);
-
-                if (!val.endsWith('"]')) {
-                    val += val.endsWith('"') ? "]" : '"]';
-                }
-            }
-
-            return val;
+            return array;
         };
 
         for (const key in list) {
             if (name.startsWith(key)) {
-                if (name.endsWith("_array")) {
+                if (isArray) {
                     return genMany(key);
                 }
 
@@ -91,11 +104,13 @@ const getValueForColumn = (_table, column) => {
             case "string":
                 val = checkFamliliar(familiarString);
 
-                if (!val) val = faker.random.word().slice();
+                if (!val) {
+                    val = faker.random.word();
 
-                if (column.name.endsWith("_array")) {
-                    return [val];
+                    if (isArray) val = [val];
                 }
+
+                if (Array.isArray(val)) val = escapeArray(val);
 
                 return val;
             case "string | Date":

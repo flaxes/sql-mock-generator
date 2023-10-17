@@ -8,6 +8,7 @@
     },
     "generation": {
         "chance_of_null_value": 0.15,
-        "chance_of_default_value": 0.3
+        "chance_of_default_value": 0.3,
+        "array_with_brackets": false
     }
 }
