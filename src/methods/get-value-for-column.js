@@ -37,13 +37,42 @@ const getValueForColumn = (_table, column) => {
     const checkFamliliar = (list) => {
         const name = camelToSnakeCase(column.name);
 
+        const genName = (key) => {
+            let res = list[key]();
+
+            if (typeof res === "string" && column.maxLength) res = res.slice(0, column.maxLength);
+
+            return res;
+        };
+
+        const genMany = (key) => {
+            const L = ~~(Math.random() * 6);
+            const array = [];
+
+            for (let i = 0; i < L; i++) {
+                array.push(genName(key));
+            }
+
+            let val = JSON.stringify(array);
+
+            if (column.maxLength) {
+                val = val.slice(0, column.maxLength);
+
+                if (!val.endsWith('"]')) {
+                    val += val.endsWith('"') ? "]" : '"]';
+                }
+            }
+
+            return val;
+        };
+
         for (const key in list) {
             if (name.startsWith(key)) {
-                let res = list[key]();
+                if (name.endsWith("_array")) {
+                    return genMany(key);
+                }
 
-                if (typeof res === "string" && column.maxLength) res = res.slice(0, column.maxLength);
-
-                return res;
+                return genName(key);
             }
         }
     };
@@ -61,7 +90,14 @@ const getValueForColumn = (_table, column) => {
                 return typeof val === "number" ? val : getRandomInt(0, column.maxLength || 50);
             case "string":
                 val = checkFamliliar(familiarString);
-                return typeof val === "string" ? val : faker.random.word().slice();
+
+                if (!val) val = faker.random.word().slice();
+
+                if (column.name.endsWith("_array")) {
+                    return [val];
+                }
+
+                return val;
             case "string | Date":
                 return randomDate();
             case "Date":
